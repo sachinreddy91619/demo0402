@@ -1,0 +1,19 @@
+
+const fastify = require('fastify'); // Import fastify
+const createUserSchema = {
+    body: {
+      type: 'object',
+      required: ['eventname', 'eventdate', 'eventlocation', 'amountrange','eventtime'], 
+      properties: {
+        eventname:{type:'string'},
+            eventdate:{type:'string',format:'date'},
+            eventlocation:{type:'string'},
+            amountrange:{type:'number'},
+            eventtime:{type:'string',format:'time'}
+        
+      }
+    },
+  };
+  
+  module.exports = createUserSchema;
+  
