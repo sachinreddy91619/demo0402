@@ -3,9 +3,11 @@ const fastify=require('fastify')({
 })
 const Event=require('../models/Events');
 
+const EventLoc=require('../models/EventLoc');
+
 exports.createEvent=async(request,reply)=>{
 
-    const {eventname,eventdate,eventlocation,amountrange,eventtime}=request.body;
+    let {eventname,eventdate,eventlocation,amountrange,eventtime}=request.body;
 
 
     const eventDate = new Date(eventdate);
@@ -18,12 +20,8 @@ exports.createEvent=async(request,reply)=>{
       });
     }
 
-
-
-
-
-
     try{
+        eventlocation=eventlocation.toLowerCase();
         const event=new Event({
             eventname,
             eventdate,
@@ -50,6 +48,22 @@ exports.createEvent=async(request,reply)=>{
 };
 
 
+exports.loc=async(request,reply)=>{
+    const {eventneedlocation}=request.body;
+    try{
+        const event= new EventLoc({
+            eventneedlocation,
+            userId:request.user.id
+        });
+        console.log(request.user.id)
+        await event.save();
+        reply.send(event);
+
+    }catch(err){
+        reply.status(400).send({message:"getting the error while giving the event location"})
+    }
+}
+
 exports.getevent=async(request,reply)=>{
     try{
 
@@ -62,7 +76,16 @@ exports.getevent=async(request,reply)=>{
 
         }
         else{
-            const event1=await Event.find({})
+            const loc= await EventLoc.find({ });
+            console.log(request.user.id)
+            console.log(loc)
+
+            const loc1=loc.tolowerCase();
+            const event1=await Event.find({loc1})
+
+            if(!event1){
+                return reply.status(404).send({message:"location not matched"})
+            }
             reply.send(event1);
         }
        
@@ -91,6 +114,18 @@ exports.getbyid=async(request,reply)=>{
 
 exports.updateevent=async(request,reply)=>{
     const {eventname,eventdate,eventlocation,amountrange,eventtime}=request.body;
+
+
+    const eventDate = new Date(eventdate);
+    const currentDate = new Date();
+  
+    if (eventDate <= currentDate) {
+      return reply.status(400).send({
+        error: 'Bad Request',
+        message: 'Event date must be in the future.',
+      });
+    }
+
 
     try{
         const event=await Event.findById(request.params.id);

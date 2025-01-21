@@ -1,6 +1,8 @@
 
 
-const fastify = require('fastify'); // Import fastify
+const fastify = require('fastify')({
+  logger:true
+}); // Import fastify
 const registerUserSchema = {
     body: {
       type: 'object',
