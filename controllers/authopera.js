@@ -15,6 +15,11 @@ module.exports.register=async(request,reply)=>{
 
 
     try{
+
+        const existingUser=await User.findOne({username});
+        if(existingUser){
+            return reply.status(400).send({error:'Username already exists. Try with another username'});
+        }
         const user=new User({username,email,password,role}); 
 
         await user.save();  
@@ -32,7 +37,7 @@ module.exports.login=async (request,reply)=>{
     try{
         const user=await User.findOne({username});
         if(!user){
-            return reply.send(400).send({error:'user not found'});
+            return reply.status(400).send({error:'user not found'});
         }
 
         const ismatch=await bcrypt.compare(password,user.password);
