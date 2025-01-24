@@ -1,11 +1,12 @@
-const fastify=require('fastify')({
-    logger:true
+import fastify from 'fastify';
+import jwt from 'jsonwebtoken';
+
+const app = fastify({
+    logger: true
 });
 
-const jwt=require('jsonwebtoken');
 
-
-module.exports=(request,reply,done)=>{
+export default(request,reply,done)=>{
 
     const authHeader=request.headers['authorization'];
 

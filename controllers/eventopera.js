@@ -1,15 +1,15 @@
-const fastify=require('fastify')({
-    logger:true
-})
-const Event=require('../models/Events');
+import fastify from 'fastify';
+import Event from '../models/Events.js';
+import EventLoc from '../models/EventLoc.js';
+import User from '../models/Users.js';
+import EMB from '../models/EMB.js';
 
-const EventLoc=require('../models/EventLoc');
+const app = fastify({
+    logger: true
+});
 
-const User=require('../models/Users');
 
-const EMB=require('../models/EMB');
-
-exports.createEvent=async(request,reply)=>{
+export const createEvent=async(request,reply)=>{
 
     let {eventname,eventdate,eventlocation,amountrange,eventtime}=request.body;
 
@@ -52,7 +52,7 @@ exports.createEvent=async(request,reply)=>{
 };
 
 
-exports.loc=async(request,reply)=>{
+export const loc=async(request,reply)=>{
     const {eventneedlocation}=request.body;
     try{
         const event= new EventLoc({
@@ -68,7 +68,7 @@ exports.loc=async(request,reply)=>{
     }
 }
 
-exports.getevent=async(request,reply)=>{
+export const getevent=async(request,reply)=>{
     try{
 
         const isAdmin = request.user.role === 'admin';
@@ -104,7 +104,7 @@ exports.getevent=async(request,reply)=>{
 };
 
 
-exports.eventbook=async(request,reply)=>{
+export const eventbook=async(request,reply)=>{
      
     const {eventStatus}=request.body;
 
@@ -169,7 +169,7 @@ exports.eventbook=async(request,reply)=>{
 }
 
 
-exports.getbyid=async(request,reply)=>{
+export const getbyid=async(request,reply)=>{
 
     try{
          const event=await Event.findById(request.params.id);
@@ -186,7 +186,7 @@ exports.getbyid=async(request,reply)=>{
 }
 
 
-exports.updateevent=async(request,reply)=>{
+export const updateevent=async(request,reply)=>{
     const {eventname,eventdate,eventlocation,amountrange,eventtime}=request.body;
 
 
@@ -223,7 +223,7 @@ exports.updateevent=async(request,reply)=>{
 };
 
 
-exports.deleteevent=async (request,reply)=>{
+export const deleteevent=async (request,reply)=>{
     try{
 
         const event=await Event.findById(request.params.id);

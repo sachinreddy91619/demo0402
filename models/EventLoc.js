@@ -1,4 +1,8 @@
-const mongoose=require('mongoose');
+//const mongoose=require('mongoose');
+
+import fastify from 'fastify';
+
+import mongoose from 'mongoose';
 
 const EventLocSchema= new mongoose.Schema(
 {
@@ -11,4 +15,5 @@ const EventLocSchema= new mongoose.Schema(
 }
 )
 
-module.exports=mongoose.model('EventLoc',EventLocSchema);
+//module.exports=mongoose.model('EventLoc',EventLocSchema);
+export default mongoose.model('EventLoc',EventLocSchema);

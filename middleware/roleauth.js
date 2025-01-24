@@ -1,13 +1,15 @@
 
-const fastify=require('fastify')({
+
+import fastify from 'fastify';
+import jwt from 'jsonwebtoken';
+
+const app=fastify({
     logger:true
-});
+})
 
 
 
-const jwt=require('jsonwebtoken');
-
-module.exports=(requiredRoles)=>{
+export default (requiredRoles)=>{
     return (request,reply,done)=>{
 
         if(!requiredRoles.includes(request.user.role)){

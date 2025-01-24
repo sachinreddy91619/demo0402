@@ -1,10 +1,11 @@
 
-const fastify=require('fastify')({
+import fastify from 'fastify';
+import mongoose from 'mongoose';
+
+
+const app=fastify({
     logger:true
-});
-
-const mongoose=require('mongoose');
-
+})
 
 const eventMBSchema=new mongoose.Schema({
     amountrange:{
@@ -51,4 +52,5 @@ const eventMBSchema=new mongoose.Schema({
 
 });
 
-module.exports=mongoose.model('EMB',eventMBSchema)
+//module.exports=mongoose.model('EMB',eventMBSchema)
+export default mongoose.model('EMB',eventMBSchema);

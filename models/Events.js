@@ -13,7 +13,13 @@
 // }
 
 
-const mongoose=require('mongoose');
+//const mongoose=require('mongoose');
+
+import fastify from 'fastify';
+const app=fastify({
+    logger:true
+})
+import mongoose from 'mongoose';
 
 
 const eventSchema=new mongoose.Schema({
@@ -40,7 +46,8 @@ const eventSchema=new mongoose.Schema({
 
 });
 
-module.exports=mongoose.model('Event',eventSchema)
+//module.exports=mongoose.model('Event',eventSchema)
+export default mongoose.model('Event',eventSchema); 
 
 
 

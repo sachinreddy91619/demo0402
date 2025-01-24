@@ -1,14 +1,13 @@
-const fastify =require('fastify')({
-    logger:true
+import fastify from 'fastify';
+import bcrypt from 'bcrypt';
+import User from '../models/Users.js';
+import jwt from 'jsonwebtoken';
+
+const app = fastify({
+    logger: true
 });
 
-const bcrypt=require('bcrypt');
-
-const User=require('../models/Users');
-
-const jwt=require('jsonwebtoken');
-
-module.exports.register=async(request,reply)=>{
+export const register=async(request,reply)=>{
     const {username,password,email,role}=request.body;
 
 
@@ -32,7 +31,7 @@ module.exports.register=async(request,reply)=>{
     }
 }
 
-module.exports.login=async (request,reply)=>{
+export const login=async (request,reply)=>{
     const {username,password}=request.body;
     try{
         const user=await User.findOne({username});

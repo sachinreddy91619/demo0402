@@ -1,6 +1,14 @@
-const bcrypt=require('bcrypt');
+// const bcrypt=require('bcrypt');
 
-const mongoose=require('mongoose');
+// const mongoose=require('mongoose');
+
+import fastify from 'fastify';
+const app=fastify({
+    logger:true
+});
+import mongoose from 'mongoose';
+
+import bcrypt from 'bcrypt';
 
 const userSchema=new mongoose.Schema({
     username:{
@@ -34,4 +42,6 @@ userSchema.pre('save',async function(done){
     done();
 });
 
-module.exports=mongoose.model('User',userSchema);
+//module.exports=mongoose.model('User',userSchema);
+
+export default mongoose.model('User',userSchema);
