@@ -3,14 +3,22 @@ import bcrypt from 'bcrypt';
 import User from '../models/Users.js';
 import jwt from 'jsonwebtoken';
 
-const app = fastify({
-    logger: true
-});
+//import { backlisted } from '../middleware/authmiddle.js';
+
+const eee=fastify({
+    logger:true
+})
+import app from '../app.js';
+
+
 
 export const register=async(request,reply)=>{
     const {username,password,email,role}=request.body;
 
-
+ // Validate that all required fields are present
+ if (!username || !password || !email || !role) {
+    return reply.status(400).send({ error: 'Missing required fields (username, password, email, role)' });
+  }
 
 
     try{
@@ -19,15 +27,18 @@ export const register=async(request,reply)=>{
         if(existingUser){
             return reply.status(400).send({error:'Username already exists. Try with another username'});
         }
+
         const user=new User({username,email,password,role}); 
 
         await user.save();  
+      //  reply.status(201).send({user})
         reply.status(201).send({message:'user created successfully'});
+       // reply.status(201).send({user})
 
     }
     catch(err){
         console.error('Error creating the user',err);
-        reply.status(400).send({error:'error creating the user'});
+        reply.status(500).send({error:'error creating the user'});
     }
 }
 
@@ -50,13 +61,48 @@ export const login=async (request,reply)=>{
         reply.send({token});
 
 
-
-
-
-
     }catch(err){
         console.error('Error durign the login',err);
         reply.status(400).send({error:'error while login in the user'});
     }
 };
 
+
+
+
+
+
+export const logout= async (request,reply)=>{
+
+    try{
+
+        const authHeader=request.headers['authorization'];
+
+        const token=authHeader && authHeader.split(' ')[1];
+
+        if(!token) 
+            {
+return reply.status(401).send({error:'token required for the logging out functionality'})
+            }
+
+            if(!global.backlistedTokens){
+                global.backlistedTokens=[];
+
+            }
+            
+            global.backlistedTokens.push(token);
+            console.log('Token blacklisted:', token);
+            console.log('Blacklisted tokens:', global.backlistedTokens);
+            //console.log(global.backlistedTokens); 
+            reply.send({message:'user logged out successfully'})
+
+    }
+    
+    catch(err){
+        console.error('Error durign the logout',err);
+        reply.status(400).send({error:'error while logout in the current-user'});
+
+
+    }
+    
+};

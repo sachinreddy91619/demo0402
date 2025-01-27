@@ -60,6 +60,11 @@ const app = fastify({
     logger: true
 });
 
+//app.decorate('backlisted', []);
+
+global.backlistedTokens=["abc",];
+
+
 mongoose.connect(process.env.MONGO_URL)
     .then(() => {
         app.log.info('Database connected successfully');
@@ -87,3 +92,4 @@ app.listen(PORT, (err, address) => {
 });
 
 
+export default app;

@@ -35,6 +35,7 @@ export const createEvent=async(request,reply)=>{
             userId: request.user.id,
         });
      
+        console.log(event)
         await event.save();
         // const ArrayUserId=[];
     //    ArrayUserId= ArrayUserId.push(request.user.id);
@@ -43,7 +44,7 @@ export const createEvent=async(request,reply)=>{
         
 
         reply.send(event);
-
+        console.log(event)
 
     }catch(err){
         reply.status(400).send({error:err.message})
@@ -71,12 +72,15 @@ export const loc=async(request,reply)=>{
 export const getevent=async(request,reply)=>{
     try{
 
+
         const isAdmin = request.user.role === 'admin';
 
        // const admins = await User.find({ role: 'admin' });
         if(isAdmin){
             const event=await Event.find({ userId: request.user.id });
             reply.send(event);
+            console.log(global.backlistedTokens);
+            console.log(global.backlistedTokens); 
 
         }
         else{
