@@ -16,8 +16,11 @@ export const register=async(request,reply)=>{
     const {username,password,email,role}=request.body;
 
  // Validate that all required fields are present
- if (!username || !password || !email || !role) {
-    return reply.status(400).send({ error: 'Missing required fields (username, password, email, role)' });
+ if(!username || !password || !email || !role) {
+    return reply.status(400)
+    // here we are getting the error mesage from the schemavalidation 
+    //.send({ error: 'Missing required fields (username, password, email, role)' });
+    console.log(reply.status(400))
   }
 
 
@@ -34,36 +37,29 @@ export const register=async(request,reply)=>{
       //  reply.status(201).send({user})
         reply.status(201).send({message:'user created successfully'});
        // reply.status(201).send({user})
-
     }
     catch(err){
-        console.error('Error creating the user',err);
+      //  console.error('Error creating the user',err);
         reply.status(500).send({error:'error creating the user'});
     }
 }
 
 export const login=async (request,reply)=>{
+    
     const {username,password}=request.body;
     try{
         const user=await User.findOne({username});
         if(!user){
             return reply.status(400).send({error:'user not found'});
         }
-
         const ismatch=await bcrypt.compare(password,user.password);
-
         if(!ismatch) return reply.status(400).send({error:'invalid credentials'});
-
         const payload={id:user._id,role:user.role};
-
         const token=jwt.sign(payload,process.env.SEC);
-
-        reply.send({token});
-
-
+        reply.status(200).send({token});
     }catch(err){
-        console.error('Error durign the login',err);
-        reply.status(400).send({error:'error while login in the user'});
+        //console.error('Error durign the login',err);
+        reply.status(500).send({error:'error while login in the user'});
     }
 };
 
@@ -100,7 +96,7 @@ return reply.status(401).send({error:'token required for the logging out functio
     
     catch(err){
         console.error('Error durign the logout',err);
-        reply.status(400).send({error:'error while logout in the current-user'});
+        reply.status(500).send({error:'error while logout in the current-user'});
 
 
     }
