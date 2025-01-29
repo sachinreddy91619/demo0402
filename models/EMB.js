@@ -46,6 +46,14 @@ const eventMBSchema=new mongoose.Schema({
     email:{
         type:String,
         required:true
+    },
+    NoOfSeatsBooking:{
+        type:Number,
+        required:true
+    },
+    AmountNeedPay:{
+        type:Number,
+        required:true
     }
 
 

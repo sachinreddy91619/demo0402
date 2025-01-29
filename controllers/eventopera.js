@@ -9,9 +9,11 @@ const app = fastify({
 });
 
 
+
+
 export const createEvent=async(request,reply)=>{
 
-    let {eventname,eventdate,eventlocation,amountrange,eventtime}=request.body;
+    let {eventname,eventdate,eventlocation,amountrange,eventtime,totalseats,availableseats,bookedseats}=request.body;
 
 
     const eventDate = new Date(eventdate);
@@ -32,6 +34,9 @@ export const createEvent=async(request,reply)=>{
             eventlocation,
             amountrange,
             eventtime,
+            totalseats,
+            availableseats,
+            bookedseats,
             userId: request.user.id,
         });
      
@@ -110,20 +115,34 @@ export const getevent=async(request,reply)=>{
 
 export const eventbook=async(request,reply)=>{
      
-    const {eventStatus}=request.body;
+    const {eventStatus,NoOfSeatsBooking}=request.body;
 
     
 
 
 
     try{
+
+
+        
         //const event=await Event.find({ _id: request.params.id }); 
         const event = await Event.findById(request.params.id);
+
+        if(event.availableseats===0){
+return reply.status(400).send({message:"event is fully booked"})
+        }
+
+
+        if(NoOfSeatsBooking>event.availableseats){
+            return reply.status(400).send({message:`maximum number of seats can be booked :${event.availableseats}, so please reduce the number of seats`})
+
+        }
+
 
 
         console.log(event)
 
-        reply.send(event);
+       // reply.send(event);
 
         const e=event.userId;
         console.log(e)  
@@ -145,6 +164,7 @@ export const eventbook=async(request,reply)=>{
         console.log(n)
         const eventBookedBy=n.username;
         const email=n.email;
+        const AmountNeedPay=event.amountrange*NoOfSeatsBooking
 
         console.log({eventManager,eventManagerEmail,eventname,eventdate,eventlocation,amountrange,eventtime,eventBookedBy,email})
 
@@ -157,20 +177,84 @@ export const eventbook=async(request,reply)=>{
             amountrange,
             eventtime,
             eventStatus,
+            NoOfSeatsBooking,
             eventBookedBy,
-            email
+            email,
+            AmountNeedPay,
+            userId:request.user.id
         })
 
         await com.save();
         console.log(com)
         reply.send(com);
-        //const event1=await User.findById(request.user.id);  
+        //const event1=await User.findById(request.user.id);
+        
+        
+        const event1 = await Event.findById(request.params.id);
+        
+        // totalseats=100
+        // availableseats=100
+        // bookedseats=0
+
+        event1.bookedseats=event1.bookedseats+com.NoOfSeatsBooking,
+
+        event1.availableseats=event1.totalseats-event1.bookedseats
+
+        await event1.save();
+
+
+/* 
+
+ const event = await Event.findById(request.params.id);
+ 
+totalseats=100
+availableseats=100
+bookedseats=0
+
+bookedseats=bookedseats+com.NoOfSeatsBooking,
+
+availableseats=totalseats-bookedseats
+
+await event.save();
+
+*/
+
+
+
+
+
 
     }catch(err){
         reply.status(400).send({error:err.message})
 }
 
 }
+
+
+
+
+export const getallbookings=async(request,reply)=>{
+
+    try{
+
+        const event=await EMB.find({userId:request.user.id});
+        reply.send(event);
+
+    }
+    catch(err){
+        reply.status(400).send({error:err.message});
+
+    }
+}
+    
+
+
+    
+
+
+
+
+
 
 
 export const getbyid=async(request,reply)=>{

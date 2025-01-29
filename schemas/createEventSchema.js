@@ -35,7 +35,11 @@ const createUserSchema = {
             eventdate: { type: 'string', format: 'date' },
             eventlocation: { type: 'string' },
             amountrange: { type: 'number' },
-            eventtime: { type: 'string', format: 'time' }
+            eventtime: { type: 'string', format: 'time' },
+            totalseats:{type:'number'},
+            availableseats:{type:'number'},
+            bookedseats:{type:'number'}
+
         }
     },
 };

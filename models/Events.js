@@ -42,6 +42,21 @@ const eventSchema=new mongoose.Schema({
         type:String,
         required:true
     },
+
+    totalseats:{
+        type:Number,
+        required:true
+    },
+    availableseats:{
+        type:Number,
+        required:true
+    },
+    bookedseats:{
+        type:Number,
+        required:true
+    },
+    
+
     userId:{type:mongoose.Schema.Types.ObjectId,ref:'User',required:true}
 
 });
