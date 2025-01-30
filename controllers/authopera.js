@@ -1,6 +1,7 @@
 import fastify from 'fastify';
 import bcrypt from 'bcrypt';
 import User from '../models/Users.js';
+import Logs from '../models/Logs.js';
 import jwt from 'jsonwebtoken';
 
 //import { backlisted } from '../middleware/authmiddle.js';
@@ -57,6 +58,16 @@ export const login=async (request,reply)=>{
         const payload={id:user._id,role:user.role};
         const token=jwt.sign(payload,process.env.SEC);
         reply.status(200).send({token});
+
+        const data=new User.findOne({username});
+        Userid=data._id;
+         
+        const user1=new Logs({Userid,token}); 
+
+        await user1.save();  
+        
+
+    
     }catch(err){
         //console.error('Error durign the login',err);
         reply.status(500).send({error:'error while login in the user'});
@@ -68,37 +79,60 @@ export const login=async (request,reply)=>{
 
 
 
-export const logout= async (request,reply)=>{
+// export const logout= async (request,reply)=>{
+
+
+//     try{
+
+//         const authHeader=request.headers['authorization'];
+//         const token=authHeader && authHeader.split(' ')[1];
+
+//         if(!token) 
+//             {
+// return reply.status(401).send({error:'token required for the logging out functionality'})
+//             }
+
+//             if(!global.backlistedTokens){
+//                 global.backlistedTokens=[];
+
+//             }
+            
+//             global.backlistedTokens.push(token);
+//             console.log('Token blacklisted:', token);
+//             console.log('Blacklisted tokens:', global.backlistedTokens);
+//             //console.log(global.backlistedTokens); 
+//             reply.send({message:'user logged out successfully'})
+
+//     }
+//     catch(err){
+//         console.error('Error durign the logout',err);
+//         reply.status(500).send({error:'error while logout in the current-user'});
+//     }
+
+// };
+
+
+
+
+export const logout=(request,reply)=>{
 
     try{
 
-        const authHeader=request.headers['authorization'];
 
+        const authHeader=request.headers['authorization'];
         const token=authHeader && authHeader.split(' ')[1];
 
         if(!token) 
-            {
-return reply.status(401).send({error:'token required for the logging out functionality'})
-            }
+            {    
+                return reply.status(401).send({error:'token required for the logging'})
+            };
 
-            if(!global.backlistedTokens){
-                global.backlistedTokens=[];
-
-            }
-            
-            global.backlistedTokens.push(token);
-            console.log('Token blacklisted:', token);
-            console.log('Blacklisted tokens:', global.backlistedTokens);
-            //console.log(global.backlistedTokens); 
-            reply.send({message:'user logged out successfully'})
 
     }
-    
+
     catch(err){
-        console.error('Error durign the logout',err);
+        console.log('Error durign the logout',err);
         reply.status(500).send({error:'error while logout in the current-user'});
-
-
     }
     
-};
+    }

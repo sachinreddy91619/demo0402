@@ -149,6 +149,8 @@ export const eventbook = async (request, reply) => {
 
         const user = await User.findById(e);
         console.log(user)
+        const eventid = event._id;
+        console.log(eventid,"this is good to see this is good to see")
 
         const eventname = event.eventname;
         const eventdate = event.eventdate;
@@ -169,6 +171,7 @@ export const eventbook = async (request, reply) => {
         console.log({ eventManager, eventManagerEmail, eventname, eventdate, eventlocation, amountrange, eventtime, eventBookedBy, email })
 
         const com = new EMB({
+            eventid,
             eventManager,
             eventManagerEmail,
             eventname,
@@ -237,8 +240,8 @@ export const getallbookings = async (request, reply) => {
 
     try {
         console.log(request.user.id, "sachin")
-        //const event = await EMB.find({ userId: request.user.id });
-        const event = await EMB.find({});
+        const event = await EMB.find({ userId: request.user.id });
+        // const event = await EMB.find({});
         reply.send(event);
 
     }
@@ -247,6 +250,130 @@ export const getallbookings = async (request, reply) => {
 
     }
 }
+
+
+
+
+
+// export const booking =async(request,reply)=>{
+//     const { NoOfSeatsBooking} = request.body;
+
+//     try{
+//         console.log(request.user.id,"rgvrgvrgv")
+//         const event=await EMB.findById(request.params.id);
+//         console.log(event,"ahhhahhhh")
+
+//         if (!event || event.userId.toString() !== request.user.id) {
+//             return reply.status(400).send({ error: 'event not found here' })
+//         }
+
+//         if(NoOfSeatsBooking){
+//             event.NoOfSeatsBooking=NoOfSeatsBooking;
+//            }
+    
+//            console.log(event.eventid,"hbffffffffffffffffffff111111122ffffffffhbffffffffffrrdeasxasccccccccccccccccccccccsxffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffmjsbyyvcdcbkjhdacb")
+//       const event1 = await Event.findById(event.eventid);
+//       console.log(event1,"ipliplilil")
+//       console.log(request.params.id)
+
+        
+//       if (NoOfSeatsBooking > event1.availableseats) {
+//         return reply.status(400).send({ message: `maximum number of seats can be booked :${event.availableseats}, so please reduce the number of seats` })
+
+//     }
+// console.log(NoOfSeatsBooking)
+//     event1.bookedseats = event1.bookedseats +NoOfSeatsBooking,
+
+//         event1.availableseats = event1.totalseats - event1.bookedseats
+
+//         const AmountNeedPay = event1.amountrange * NoOfSeatsBooking
+
+//                          if(event.AmountNeedPay){
+//                              event.AmountNeedPay=AmountNeedPay
+//                          }            
+        
+//     await event1.save();
+
+//         await event.save();
+//         reply.send(event);
+    
+
+//     }
+//     catch(err){
+        
+//             reply.status(400).send({ error: err.message });
+
+//     }
+// }
+
+
+
+export const booking =async(request,reply)=>{
+    const { NoOfSeatsBooking} = request.body;
+
+    try{
+        console.log(request.user.id,"rgvrgvrgv")
+        const book=await EMB.findByIdAndUpdate(request.params.id);
+        console.log(book,"ahhhahhhh")
+
+        if (!book || book.userId.toString() !== request.user.id) {
+            return reply.status(400).send({ error: 'event not found here' })
+        }
+
+        if(NoOfSeatsBooking){
+            book.NoOfSeatsBooking=NoOfSeatsBooking;
+           }
+    
+           console.log(book.eventid,"hbffffffffffffffffffff111111122ffffffffhbffffffffffrrdeasxasccccccccccccccccccccccsxffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffmjsbyyvcdcbkjhdacb")
+      const event1 = await Event.findById(book.eventid);
+      console.log(event1,"ipliplilil")
+      console.log(request.params.id)
+
+        
+      if (NoOfSeatsBooking > event1.availableseats) {
+        return reply.status(400).send({ message: `maximum number of seats can be booked :${event.availableseats}, so please reduce the number of seats` })
+
+    }
+console.log(NoOfSeatsBooking)
+    event1.bookedseats = event1.bookedseats +NoOfSeatsBooking,
+
+        event1.availableseats = event1.totalseats - event1.bookedseats
+
+        const AmountNeedPay = event1.amountrange * NoOfSeatsBooking
+
+                         if(book.AmountNeedPay){
+                             book.AmountNeedPay=AmountNeedPay
+                         }            
+        
+    await event1.save();
+
+        await book.save();
+        reply.send(book);
+    
+
+    }
+    catch(err){
+        
+            reply.status(400).send({ error: err.message });
+
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -312,6 +439,29 @@ export const updateevent = async (request, reply) => {
 };
 
 
+
+
+export const deleteb=async(request,reply)=>{
+
+
+    try{
+
+        const event=await EMB.findById(request.params.id);
+
+        if(!event|| event.userId.toString()!==request.user.id){
+            return reply.status(400).send({error:'event not found'});
+        }
+        
+        await event.deleteOne();
+        reply.send({message:'event deleted successfully'});
+
+    }
+
+    catch(err){
+        reply.status(400).send({error:err.message});
+    }
+}
+
 export const deleteevent = async (request, reply) => {
     try {
 
@@ -330,3 +480,4 @@ export const deleteevent = async (request, reply) => {
 
     }
 };
+

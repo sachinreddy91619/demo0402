@@ -49,7 +49,7 @@ import fastify from 'fastify';
 const app = fastify({
   logger: true
 });
-import { createEvent, getevent, getbyid, deleteevent, updateevent, loc, eventbook, getallbookings } from '../controllers/eventopera.js';
+import { createEvent, getevent, getbyid, deleteevent, updateevent, loc, eventbook, getallbookings,booking } from '../controllers/eventopera.js';
 import createEventSchema from '../schemas/createEventSchema.js';
 import updateEventSchema from '../schemas/createEventSchema.js';
 import getbyidEventSchema from '../schemas/getbyidEventSchema.js';
@@ -68,12 +68,8 @@ async function eventRoutes(fastify, options) {
   fastify.post('/location', { preHandler: auth }, loc);
   fastify.post('/eventit/:id', { preHandler: auth }, eventbook);
 
-
-
-
-
-
   fastify.get('/all', { preHandler: auth }, getallbookings);
+  fastify.put('/bookings/:id', { preHandler: auth }, booking);
 }
 
 export default eventRoutes;

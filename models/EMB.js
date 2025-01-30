@@ -8,6 +8,8 @@ const app = fastify({
 })
 
 const eventMBSchema = new mongoose.Schema({
+
+    eventid:{type:mongoose.Schema.Types.ObjectId,ref:'Event',required:true},
     amountrange: {
         type: Number
     },
