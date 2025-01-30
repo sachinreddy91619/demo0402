@@ -150,7 +150,7 @@ export const eventbook = async (request, reply) => {
         const user = await User.findById(e);
         console.log(user)
         const eventid = event._id;
-        console.log(eventid,"this is good to see this is good to see")
+        console.log(eventid, "this is good to see this is good to see")
 
         const eventname = event.eventname;
         const eventdate = event.eventdate;
@@ -270,13 +270,13 @@ export const getallbookings = async (request, reply) => {
 //         if(NoOfSeatsBooking){
 //             event.NoOfSeatsBooking=NoOfSeatsBooking;
 //            }
-    
+
 //            console.log(event.eventid,"hbffffffffffffffffffff111111122ffffffffhbffffffffffrrdeasxasccccccccccccccccccccccsxffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffmjsbyyvcdcbkjhdacb")
 //       const event1 = await Event.findById(event.eventid);
 //       console.log(event1,"ipliplilil")
 //       console.log(request.params.id)
 
-        
+
 //       if (NoOfSeatsBooking > event1.availableseats) {
 //         return reply.status(400).send({ message: `maximum number of seats can be booked :${event.availableseats}, so please reduce the number of seats` })
 
@@ -291,16 +291,16 @@ export const getallbookings = async (request, reply) => {
 //                          if(event.AmountNeedPay){
 //                              event.AmountNeedPay=AmountNeedPay
 //                          }            
-        
+
 //     await event1.save();
 
 //         await event.save();
 //         reply.send(event);
-    
+
 
 //     }
 //     catch(err){
-        
+
 //             reply.status(400).send({ error: err.message });
 
 //     }
@@ -308,53 +308,97 @@ export const getallbookings = async (request, reply) => {
 
 
 
-export const booking =async(request,reply)=>{
-    const { NoOfSeatsBooking} = request.body;
+export const booking = async (request, reply) => {
 
-    try{
-        console.log(request.user.id,"rgvrgvrgv")
-        const book=await EMB.findByIdAndUpdate(request.params.id);
-        console.log(book,"ahhhahhhh")
+    const { NoOfSeatsBooking } = request.body;
+
+    try {
+        console.log(request.user.id, "rgvrgvrgv")
+        const book = await EMB.findByIdAndUpdate(request.params.id);
+        console.log(book, "ahhhahhhh")
 
         if (!book || book.userId.toString() !== request.user.id) {
             return reply.status(400).send({ error: 'event not found here' })
         }
 
-        if(NoOfSeatsBooking){
-            book.NoOfSeatsBooking=NoOfSeatsBooking;
-           }
-    
-           console.log(book.eventid,"hbffffffffffffffffffff111111122ffffffffhbffffffffffrrdeasxasccccccccccccccccccccccsxffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffmjsbyyvcdcbkjhdacb")
-      const event1 = await Event.findById(book.eventid);
-      console.log(event1,"ipliplilil")
-      console.log(request.params.id)
 
-        
-      if (NoOfSeatsBooking > event1.availableseats) {
-        return reply.status(400).send({ message: `maximum number of seats can be booked :${event.availableseats}, so please reduce the number of seats` })
+        const event1 = await Event.findById(book.eventid);
 
-    }
-console.log(NoOfSeatsBooking)
-    event1.bookedseats = event1.bookedseats +NoOfSeatsBooking,
 
-        event1.availableseats = event1.totalseats - event1.bookedseats
+        if (NoOfSeatsBooking > event1.availableseats) {
+            return reply.status(400).send({ message: `maximum number of seats can be booked :${event1.availableseats}, so please reduce the number of seats` })
+        }
 
-        const AmountNeedPay = event1.amountrange * NoOfSeatsBooking
+        // if (NoOfSeatsBooking) {
+        //     book.NoOfSeatsBooking = NoOfSeatsBooking;
+        // }
 
-                         if(book.AmountNeedPay){
-                             book.AmountNeedPay=AmountNeedPay
-                         }            
-        
-    await event1.save();
+        if (NoOfSeatsBooking) {
 
+            if (book.NoOfSeatsBooking > NoOfSeatsBooking) {
+                event1.availableseats = event1.availableseats + (book.NoOfSeatsBooking - NoOfSeatsBooking);
+                event1.bookedseats = event1.totalseats - event1.availableseats
+                book.AmountNeedPay = NoOfSeatsBooking * event1.amountrange
+                console.log(book.AmountNeedPay, "sai")
+                console.log(NoOfSeatsBooking)
+                console.log(event1.amountrange)
+
+            }
+
+            else if (book.NoOfSeatsBooking < NoOfSeatsBooking) {
+
+                event1.availableseats = event1.availableseats - (NoOfSeatsBooking - book.NoOfSeatsBooking);
+                event1.bookedseats = event1.totalseats - event1.availableseats
+                book.AmountNeedPay = NoOfSeatsBooking * event1.amountrange
+                console.log(book.AmountNeedPay)
+                console.log(NoOfSeatsBooking)
+                console.log(event1.amountrange)
+
+            }
+
+
+        }
+        await event1.save();
         await book.save();
         reply.send(book);
-    
+
+        console.log("this is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd knd nnk dnk nkd nkd nkd nkd")
+
+        // const event1 = await Event.findById(book.eventid);
+        // console.log(event1, "ipliplilil")
+
+
+
+        // console.log(book.eventid, "hbffffffffffffffffffff111111122ffffffffhbffffffffffrrdeasxasccccccccccccccffffffffffffffffffffffffmjsbyyvcdcbkjhdacb")
+        // const event1 = await Event.findById(book.eventid);
+        // console.log(event1, "ipliplilil")
+        // console.log(request.params.id)
+
+
+        // if (NoOfSeatsBooking > event1.availableseats) {
+        //     return reply.status(400).send({ message: `maximum number of seats can be booked :${event.availableseats}, so please reduce the number of seats` })
+
+        // }
+        // console.log(NoOfSeatsBooking)
+        // event1.bookedseats = event1.bookedseats + NoOfSeatsBooking,
+
+        //     event1.availableseats = event1.totalseats - event1.bookedseats
+
+        // const AmountNeedPay = event1.amountrange * NoOfSeatsBooking
+
+        // if (book.AmountNeedPay) {
+        //     book.AmountNeedPay = AmountNeedPay
+        // }
+
+        // await event1.save();
+        // await book.save();
+        // reply.send(book);
+
 
     }
-    catch(err){
-        
-            reply.status(400).send({ error: err.message });
+    catch (err) {
+
+        reply.status(400).send({ error: err.message });
 
     }
 }
@@ -441,24 +485,24 @@ export const updateevent = async (request, reply) => {
 
 
 
-export const deleteb=async(request,reply)=>{
+export const deleteb = async (request, reply) => {
 
 
-    try{
+    try {
 
-        const event=await EMB.findById(request.params.id);
+        const event = await EMB.findById(request.params.id);
 
-        if(!event|| event.userId.toString()!==request.user.id){
-            return reply.status(400).send({error:'event not found'});
+        if (!event || event.userId.toString() !== request.user.id) {
+            return reply.status(400).send({ error: 'event not found' });
         }
-        
+
         await event.deleteOne();
-        reply.send({message:'event deleted successfully'});
+        reply.send({ message: 'event deleted successfully' });
 
     }
 
-    catch(err){
-        reply.status(400).send({error:err.message});
+    catch (err) {
+        reply.status(400).send({ error: err.message });
     }
 }
 
