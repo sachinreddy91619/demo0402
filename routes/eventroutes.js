@@ -49,7 +49,7 @@ import fastify from 'fastify';
 const app = fastify({
   logger: true
 });
-import { createEvent, getevent, getbyid, deleteevent, updateevent, loc, eventbook, getallbookings,booking } from '../controllers/eventopera.js';
+import { createEvent, getevent, getbyid, deleteevent, updateevent, loc, eventbook, getallbookings,booking ,eventdelete} from '../controllers/eventopera.js';
 import createEventSchema from '../schemas/createEventSchema.js';
 import updateEventSchema from '../schemas/createEventSchema.js';
 import getbyidEventSchema from '../schemas/getbyidEventSchema.js';
@@ -58,7 +58,7 @@ import auth from '../middleware/authmiddle.js';
 import roleauth from '../middleware/roleauth.js';
 
 async function eventRoutes(fastify, options) {
-
+fastify.delete('/cc/:id', { preHandler: auth }, eventdelete);
   fastify.post('/create', { schema: createEventSchema, preHandler: [auth, roleauth(['admin'])] }, createEvent);
   fastify.get('/get', { preHandler: auth }, getevent);
   fastify.get('/get/:id', { schema: getbyidEventSchema, preHandler: auth }, getbyid);
@@ -69,7 +69,7 @@ async function eventRoutes(fastify, options) {
   fastify.post('/eventit/:id', { preHandler: auth }, eventbook);
 
   fastify.get('/all', { preHandler: auth }, getallbookings);
-  fastify.put('/bookings/:id', { preHandler: auth }, booking);
+  //fastify.put('/bookings/:id', { preHandler: auth }, booking);
 }
 
 export default eventRoutes;

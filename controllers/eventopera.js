@@ -322,7 +322,7 @@ export const booking = async (request, reply) => {
         }
 
 
-        const event1 = await Event.findById(book.eventid);
+        const event1 = await Event.findByIdAndUpdate(book.eventid);
 
 
         if (NoOfSeatsBooking > event1.availableseats) {
@@ -332,13 +332,32 @@ export const booking = async (request, reply) => {
         // if (NoOfSeatsBooking) {
         //     book.NoOfSeatsBooking = NoOfSeatsBooking;
         // }
+        if(book.NoOfSeatsBooking===NoOfSeatsBooking){
+            return reply.status(200).send({message:"you are given same number of seats,so no changes in your booking"})
+
+        }
+
+        if(NoOfSeatsBooking===0){
+            return reply.status(400).send({message:"no of seats cannot be zero"});
+        }
+
+
+
+
 
         if (NoOfSeatsBooking) {
 
             if (book.NoOfSeatsBooking > NoOfSeatsBooking) {
+                console.log(event1.availableseats,"availableseats-before")
+
                 event1.availableseats = event1.availableseats + (book.NoOfSeatsBooking - NoOfSeatsBooking);
+                console.log(event1.availableseats,"availableseats-after")
+                console.log(event1.bookedseats,"bookedseats-before")
                 event1.bookedseats = event1.totalseats - event1.availableseats
+                console.log(event1.bookedseats,"bookedseats-after")
                 book.AmountNeedPay = NoOfSeatsBooking * event1.amountrange
+                console.log(book.NoOfSeatsBooking,"bookedseats-Before")
+                book.NoOfSeatsBooking = NoOfSeatsBooking;
                 console.log(book.AmountNeedPay, "sai")
                 console.log(NoOfSeatsBooking)
                 console.log(event1.amountrange)
@@ -346,10 +365,17 @@ export const booking = async (request, reply) => {
             }
 
             else if (book.NoOfSeatsBooking < NoOfSeatsBooking) {
+                console.log(event1.availableseats,"availableseats-before")
+
 
                 event1.availableseats = event1.availableseats - (NoOfSeatsBooking - book.NoOfSeatsBooking);
+                console.log(event1.availableseats,"availableseats-after")
+                console.log(event1.bookedseats,"bookedseats-before")
                 event1.bookedseats = event1.totalseats - event1.availableseats
+                console.log(event1.bookedseats,"bookedseats-after")
                 book.AmountNeedPay = NoOfSeatsBooking * event1.amountrange
+                console.log(book.NoOfSeatsBooking,"bookedseats-Before")
+                book.NoOfSeatsBooking = NoOfSeatsBooking;
                 console.log(book.AmountNeedPay)
                 console.log(NoOfSeatsBooking)
                 console.log(event1.amountrange)
@@ -485,7 +511,7 @@ export const updateevent = async (request, reply) => {
 
 
 
-export const deleteb = async (request, reply) => {
+export const eventdelete = async (request, reply) => {
 
 
     try {
@@ -496,6 +522,15 @@ export const deleteb = async (request, reply) => {
             return reply.status(400).send({ error: 'event not found' });
         }
 
+        const d=event.NoOfSeatsBooking;
+
+        const event1=await Event.findByIdAndUpdate(event.eventid);
+        event1.bookedseats=event1.bookedseats-d;
+        event1.availableseats=event1.totalseats-event1.bookedseats;
+
+        await event1.save();
+
+
         await event.deleteOne();
         reply.send({ message: 'event deleted successfully' });
 
@@ -505,6 +540,15 @@ export const deleteb = async (request, reply) => {
         reply.status(400).send({ error: err.message });
     }
 }
+
+
+
+
+
+
+
+
+
 
 export const deleteevent = async (request, reply) => {
     try {

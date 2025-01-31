@@ -28,6 +28,11 @@ const LogSchema=new mongoose.Schema({
     UserToken:{
         type:String,
         required:true
+    },
+
+    username:{
+        type:String,
+        required:true
     }
 
 })
