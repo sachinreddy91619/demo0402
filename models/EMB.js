@@ -37,10 +37,7 @@ const eventMBSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    eventStatus: {
-        type: String,
-        required: true
-    },
+    
     eventBookedBy: {
         type: String,
         required: true

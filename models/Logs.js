@@ -11,28 +11,29 @@ const LogSchema=new mongoose.Schema({
    // userid:{type:mongoose.Schema.Types.ObjectId,ref:'User',
     //userId:{type:mongoose.Schema.Types.ObjectId,ref:'User',required:true},
     
-    Userid:{
-    type:String,
-    required:true
-        },
+    UserId: {
+        type: mongoose.Schema.Types.ObjectId,  // Changing to ObjectId to reference the User model directly
+        ref: 'User',
+        required: true
+    },
+
+
     logintime:{
         type:Date,
+        default:Date.now,
         required:true
     },
 
     logouttime:{
         type:Date,
-        required:true
+        default:null,
+        required:false
     },
 
     UserToken:{
         type:String,
-        required:true
-    },
-
-    username:{
-        type:String,
-        required:true
+        default:null,
+        //required:true
     }
 
 })

@@ -61,6 +61,15 @@ export const createEvent = async (request, reply) => {
 export const loc = async (request, reply) => {
     const { eventneedlocation } = request.body;
     try {
+
+        const existinglocation=await EventLoc.findOne({
+            userId: request.user.id
+        })
+
+        if(existinglocation){
+            return reply.status(400).send({ message: "location already exist" })
+
+        }
         const event = new EventLoc({
             eventneedlocation,
             userId: request.user.id
@@ -90,22 +99,45 @@ export const getevent = async (request, reply) => {
 
         }
         else {
-            const loc = await EventLoc.find({});
-            console.log(request.user.id)
-            console.log(loc)
 
+            const userlocation=await EventLoc.findOne({
+                userId: request.user.id
+            });
 
-            let t = loc[loc.length - 1].eventneedlocation;
-            console.log(t)
-
-            const loc1 = t.toLowerCase();
-            const event1 = await Event.find({ eventlocation: loc1 })
-
-            if (!event1) {
-                return reply.status(404).send({ message: "location not matched" })
+            console.log(userlocation,"sachin sachin sachin sachin sachin" )
+            
+            if(!userlocation){
+                return reply.status(404).send({ message: "Please provide your location first." })
             }
+
+            const loc = userlocation.eventneedlocation.toLowerCase();
+
+            // Find events based on the user's location
+            const event1 = await Event.find({ eventlocation: loc });
+
+            if (!event1 || event1.length === 0) {
+                return reply.status(404).send({ message: "No events found for this location" });
+            }
+
             reply.send(event1);
         }
+
+        //     const loc = await EventLoc.find({});
+        //     console.log(request.user.id)
+        //     console.log(loc)
+
+
+        //     let t = loc[loc.length - 1].eventneedlocation;
+        //     console.log(t)
+
+        //     const loc1 = t.toLowerCase();
+        //     const event1 = await Event.find({ eventlocation: loc1 })
+
+        //     if (!event1) {
+        //         return reply.status(404).send({ message: "location not matched" })
+        //     }
+        //     reply.send(event1);
+        // }
 
 
     } catch (err) {
@@ -116,7 +148,7 @@ export const getevent = async (request, reply) => {
 
 export const eventbook = async (request, reply) => {
 
-    const { eventStatus, NoOfSeatsBooking } = request.body;
+    const {  NoOfSeatsBooking } = request.body;
 
 
 
@@ -180,7 +212,7 @@ export const eventbook = async (request, reply) => {
             eventlocation,
             amountrange,
             eventtime,
-            eventStatus,
+           
             NoOfSeatsBooking,
             eventBookedBy,
             email,
@@ -490,6 +522,7 @@ export const updateevent = async (request, reply) => {
 
     try {
         const event = await Event.findById(request.params.id);
+        console.log(event,"qodic qodic                      qodic")
 
         if (!event || event.userId.toString() !== request.user.id) {
             return reply.status(400).send({ error: 'event not found' })
