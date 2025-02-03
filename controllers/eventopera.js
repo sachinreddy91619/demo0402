@@ -84,6 +84,7 @@ export const getevent = async (request, reply) => {
         if (isAdmin) {
             const event = await Event.find({ userId: request.user.id });
             reply.send(event);
+            console.log(event, "MODI, MODI , MODI")
             console.log(global.backlistedTokens);
             console.log(global.backlistedTokens);
 
