@@ -47,7 +47,7 @@ import Logs from '../models/Logs.js';
 
 
 // //export {app}
-export default async (request, reply, done) => {
+export default async (request, reply) => {
     const authHeader = request.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];  // Extract the token from the authorization header
 
@@ -77,7 +77,7 @@ export default async (request, reply, done) => {
         request.user = decoded;
 
         // Continue with the request processing
-        done();
+        
     } catch (err) {
         console.error('Token verification failed:', err);
         return reply.status(403).send({ error: 'Invalid or expired token' });

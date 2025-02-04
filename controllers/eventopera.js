@@ -13,6 +13,8 @@ const app = fastify({
 
 export const createEvent = async (request, reply) => {
 
+    console.log("this is the starting of the create route");
+
     let { eventname, eventdate, eventlocation, amountrange, eventtime, totalseats, availableseats, bookedseats } = request.body;
 
 
@@ -40,16 +42,14 @@ export const createEvent = async (request, reply) => {
             userId: request.user.id,
         });
 
-        console.log(event)
-        await event.save();
-        // const ArrayUserId=[];
-        //    ArrayUserId= ArrayUserId.push(request.user.id);
-        //     console.log(ArrayUserId)
-
-
-
-        reply.send(event);
-        console.log(event)
+        // console.log(event)
+        // await event.save();
+        // console.log("data saved to the database first time for this entry");
+        // reply.send(event);
+        const savedEvent = await event.save();
+        console.log("data saved to the database first time for this entry");
+        return reply.send(savedEvent);
+       
 
     } catch (err) {
         reply.status(400).send({ error: err.message })
@@ -522,22 +522,39 @@ export const updateevent = async (request, reply) => {
 
     try {
         const event = await Event.findById(request.params.id);
-        console.log(event,"qodic qodic                      qodic")
+        console.log(event,"qodic qodic ")
 
         if (!event || event.userId.toString() !== request.user.id) {
             return reply.status(400).send({ error: 'event not found' })
         }
-        if (eventname) event.eventname = eventname;
-        if (eventdate) event.eventdate = eventdate;
-        if (eventlocation) event.eventlocation = eventlocation;
-        if (amountrange) event.amountrange = amountrange;
-        if (eventtime) event.eventtime = eventtime;
 
-        await event.save();
-        reply.send(event);
+
+        const updateData={};
+
+        if (eventname) updateData.eventname = eventname;
+        if (eventdate) updateData.eventdate = eventdate;
+        if (eventlocation) updateData.eventlocation = eventlocation;
+        if (amountrange) updateData.amountrange = amountrange;
+        if (eventtime) updateData.eventtime = eventtime;
+        // if (eventname) event.eventname = eventname;
+        // if (eventdate) event.eventdate = eventdate;
+        // if (eventlocation) event.eventlocation = eventlocation;
+        // if (amountrange) event.amountrange = amountrange;
+        // if (eventtime) event.eventtime = eventtime;
+
+        // await event.save();
+        // reply.send(event);
+        const updatedEvent = await Event.findByIdAndUpdate(request.params.id,
+            {$set: updateData}, { new: true,runValidators: true });
+            
+            if(!updatedEvent){  
+                return reply.status(400).send({ error: 'Event updated failed found' })
+            }
+
+            reply.send(updatedEvent);
 
     } catch (err) {
-        reply.status(400).send({ error: err.message });
+        reply.status(400).send({ error: err.message});
 
     }
 };

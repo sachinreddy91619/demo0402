@@ -27,7 +27,7 @@
 const updateEventSchema = {
   body: {
       type: 'object',
-    //  required: ['eventname', 'eventdate', 'eventlocation', 'amountrange', 'eventtime'],
+    // required: ['eventname', 'eventdate', 'eventlocation', 'amountrange', 'eventtime'],
       properties: {
           eventname: { type: 'string' },
           eventdate: { type: 'date', format: 'date' },

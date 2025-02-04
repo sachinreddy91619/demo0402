@@ -63,14 +63,15 @@ const app = fastify({
 //app.decorate('backlisted', []);
 
 global.backlistedTokens=["abc",];
-
-
+console.log("the server started successfully");
 mongoose.connect(process.env.MONGO_URL)
     .then(() => {
         app.log.info('Database connected successfully');
+        console.log('Database connected successfully');
     })
     .catch((err) => {
         app.log.error('MongoDB not connected successfully', err);
+        console.error('MongoDB not connected successfully', err);
     });
 
 app.register(eventRou, { prefix: '/event' });
@@ -91,5 +92,6 @@ app.listen(PORT, (err, address) => {
     app.log.info(`Server listening on ${address}`);
 });
 
+console.log(`the server listening on port ${PORT}`);
 
 export default app;

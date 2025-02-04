@@ -11,13 +11,17 @@ const eee=fastify({
 })
 import app from '../app.js';
 
+console.log("Starting authopera.js...");
 
 
 export const register=async(request,reply)=>{
     const {username,password,email,role}=request.body;
 
+
+    console.log("Registering user:", { username, email, role });  // Debugging the incoming request
  // Validate that all required fields are present
  if(!username || !password || !email || !role) {
+    console.log("Missing required fields:", { username, password, email, role });  // Debugging missing fields
     return reply.status(400)
     // here we are getting the error mesage from the schemavalidation 
     //.send({ error: 'Missing required fields (username, password, email, role)' });
@@ -28,6 +32,7 @@ export const register=async(request,reply)=>{
     try{
 
         const existingUser=await User.findOne({username});
+        console.log("Checking for existing user:", username, "Found:", existingUser);
         if(existingUser){
             return reply.status(400).send({error:'Username already exists. Try with another username'});
         }
@@ -36,20 +41,25 @@ export const register=async(request,reply)=>{
 
         await user.save();  
       //  reply.status(201).send({user})
+      console.log("Sending success response: user created");
         reply.status(201).send({message:'user created successfully'});
        // reply.status(201).send({user})
     }
     catch(err){
       //  console.error('Error creating the user',err);
+      console.error("Error during user registration:", err);
         reply.status(500).send({error:'error creating the user'});
     }
 }
 
 export const login=async (request,reply)=>{
     
+   
     const {username,password}=request.body;
+   // console.log("Login attempt:", { username });  // Debugging login request
     try{
         const user=await User.findOne({username});
+        console.log("User found for login:", user ? user._id : "No user found");
         if(!user){
             return reply.status(400).send({error:'user not found'});
         }
@@ -68,7 +78,7 @@ console.log(token);
         console.log(existingLog,"lIf you want to create a new Logs entry only when there's no active session, you can leave the else block as it is. If you want to handle multiple logins or sessions (which is useful if a user can log in from multiple devices), you may need a more complex handling system (e.g., session IDs or timestamp tracking).If you want to create a new Logs entry only when there's no active session, you can leave the else block as it is. If you want to handle multiple logins or sessions (which is useful if a user can log in from multiple devices), you may need a more complex handling system (e.g., session IDs or timestamp tracking).If you want to create a new Logs entry only when there's no active session, you can leave the else block as it is. If you want to handle multiple logins or sessions (which is useful if a user can log in from multiple devices), you may need a more complex handling system (e.g., session IDs or timestamp tracking).If you want to create a new Logs entry only when there's no active session, you can leave the else block as it is. If you want to handle multiple logins or sessions (which is useful if a user can log in from multiple devices), you may need a more complex handling system (e.g., session IDs or timestamp tracking).");
 
         if (existingLog) {
-
+            console.log("Existing log found, updating log:", existingLog);
             existingLog.UserId= user._id,
 
             existingLog.logintime=Date.now(),
@@ -79,10 +89,10 @@ console.log(token);
 
             await existingLog.save();  
     console.log("Existing log updated:", existingLog);
-
+    console.log("Existing log updated:", existingLog);
         }
         else{
-
+            console.log("No existing log found, creating new log.");
             const user1=new Logs({
                 //Userid:user._id,
                 UserId: user._id,
@@ -101,7 +111,7 @@ console.log(token);
         
 
 
-    
+        console.log("Sending login response with token:", token);
         
         reply.status(200).send({token});
 
@@ -160,6 +170,7 @@ export const logout= async (request,reply)=>{
 
 
         const authHeader=request.headers['authorization'];
+        console.log("Logout attempt, received token:", authHeader);
         const token=authHeader && authHeader.split(' ')[1];
 
         if(!token) 
@@ -174,6 +185,8 @@ export const logout= async (request,reply)=>{
 
             const userlogs = await Logs.findOne({ UserId: userId });
 
+            console.log("User logs for logout:", userlogs);
+
             if (!userlogs) {
                 return reply.status(401).send({ error: 'No active session found for this token' });
             }
@@ -184,7 +197,7 @@ export const logout= async (request,reply)=>{
             userlogs.UserToken = null;
 
             await userlogs.save();
-
+            console.log("Logging out user, sending response.");
             reply.send({message:'user logged out successfully'});
     }
 

@@ -64,7 +64,8 @@ async function eventRoutes(fastify, options) {
   fastify.post('/create', { schema: createEventSchema, preHandler: [auth, roleauth(['admin'])] }, createEvent);
   fastify.get('/get', { preHandler: auth }, getevent);
   fastify.get('/get/:id', { schema: getbyidEventSchema, preHandler: auth }, getbyid);
-  fastify.put('/update/:id', { schema: updateEventSchema, preHandler: [auth, roleauth(['admin'])] }, updateevent);
+  //fastify.put('/update/:id', { schema: updateEventSchema, preHandler: [auth, roleauth(['admin'])] }, updateevent);
+  fastify.put('/update/:id', {preHandler: [auth, roleauth(['admin'])] }, updateevent);
   fastify.delete('/delete/:id', { preHandler: [auth, roleauth(['admin'])] }, deleteevent);
 
   fastify.post('/location', { preHandler: auth }, loc);
