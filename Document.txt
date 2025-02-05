@@ -1,0 +1,706 @@
+
+EVENT-MANAGER:
+================= >
+
+register:
+===========>
+
+METHOD: POST 
+
+URL :http://localhost:3021/auth/register
+
+BODY:
+{
+    
+    "username":"Amit",
+    "password":"Amit123",
+    "email":"Amit123@gamil.com",
+    "role":"admin"  
+}
+
+RESPONSE :
+{
+    "message": "user created successfully"
+}
+
+
+
+when registering with the same user name :
+CASE-2:
+ {
+    "error": "Username already exists. Try with another username"
+}
+
+
+
+while registering if  role entery is missing: 
+case-3:
+
+BODY: 
+{
+    
+    "username":"Amit",
+    "password":"Amit123",
+    "email":"Amit123@gamil.com"
+}
+
+RESPONSE :
+
+{
+    "error": "body should have required property 'role'"
+}
+
+
+
+While  registering if role is given with different value instead of {admin/user} 
+case-4:
+
+BODY:
+
+{
+    
+    "username":"Amit11",
+    "password":"Amit123",
+    "email":"Amit123@gamil.com",
+    "role":"sir"  
+}
+
+RESPONSE:
+
+{
+    "error": "error creating the user"
+}
+
+================================================================================================================================================================================
+
+LOGIN
+==========>
+
+METHOD :POST
+
+URL :http://localhost:3021/auth/login
+
+
+BODY :
+{
+    
+    "username":"Amit",
+    "password":"Amit123"
+}
+
+RESPONSE: 
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTJlZDNhNWUzYzM5MWJmNmVhM2NhNSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTczODczMDg1N30.W1rmyRFkC8wh0oU09x6uG_YrMwv8zCa35ilr5qOV6-Q"
+}
+
+
+
+While registering if password is given wrong:
+
+CASE-2:
+BODY: 
+{
+    
+    "username":"Amit",
+    "password":"Amit120"
+}
+
+RESPONSE: 
+
+{
+    "error": "invalid credentials"
+}
+
+
+// While logging in if give give only one field 
+case-3:
+
+BODY: 
+{
+    
+    "password":"Amit123"
+}
+
+RESPONSE :
+
+
+{
+    "error": "body should have required property 'username'"
+}
+
+================================================================================================================================================================================
+
+
+METHOD :POST 
+
+URL :http://localhost:3021/event/create
+
+BODY :
+{
+    "amountrange": 10,
+    "eventname": "Marriage",
+    "eventdate": "2025-02-10",
+    "eventlocation": "Telangana",
+    "eventtime": "18:15:10",
+    "totalseats": 100,
+    "availableseats": 100,
+    "bookedseats": 0
+}
+
+RESPONSE :
+
+{
+    "amountrange": 10,
+    "eventname": "Marriage",
+    "eventdate": "2025-02-10T00:00:00.000Z",
+    "eventlocation": "telangana",
+    "eventtime": "18:15:10",
+    "totalseats": 100,
+    "availableseats": 100,
+    "bookedseats": 0,
+    "userId": "67a2ed3a5e3c391bf6ea3ca5",
+    "_id": "67a2ee235e3c391bf6ea3cad",
+    "__v": 0
+}
+
+FOR SECOND ENTRY :
+
+
+{
+    "amountrange": 10,
+    "eventname": "Birthday-party",
+    "eventdate": "2025-02-10",
+    "eventlocation": "Telangana",
+    "eventtime": "18:15:10",
+    "totalseats": 100,
+    "availableseats": 100,
+    "bookedseats": 0
+}
+
+
+
+{
+    "amountrange": 10,
+    "eventname": "Birthday-party",
+    "eventdate": "2025-02-10T00:00:00.000Z",
+    "eventlocation": "telangana",
+    "eventtime": "18:15:10",
+    "totalseats": 100,
+    "availableseats": 100,
+    "bookedseats": 0,
+    "userId": "67a2ed3a5e3c391bf6ea3ca5",
+    "_id": "67a2eed45e3c391bf6ea3cb0",
+    "__v": 0
+}
+
+
+While creating the event , if date is in past then
+case-2:
+
+BODY :
+{
+    "amountrange": 10,
+    "eventname": "Birthday-party",
+    "eventdate": "2022-02-10",
+     ....
+     ....
+}
+
+RESPONSE :
+
+{
+    "error": "Bad Request",
+    "message": "Event date must be in the future."
+}
+================================================================================================================================================================================
+
+METHOD : GET
+
+URL :http://localhost:3021/event/get
+
+RESPONSE:
+
+[
+    {
+        "_id": "67a2ee235e3c391bf6ea3cad",
+        "amountrange": 10,
+        "eventname": "Marriage",
+        "eventdate": "2025-02-10T00:00:00.000Z",
+        "eventlocation": "telangana",
+        "eventtime": "18:15:10",
+        "totalseats": 100,
+        "availableseats": 100,
+        "bookedseats": 0,
+        "userId": "67a2ed3a5e3c391bf6ea3ca5",
+        "__v": 0
+    },
+    {
+        "_id": "67a2eed45e3c391bf6ea3cb0",
+        "amountrange": 10,
+        "eventname": "Birthday-party",
+        "eventdate": "2025-02-10T00:00:00.000Z",
+        "eventlocation": "telangana",
+        "eventtime": "18:15:10",
+        "totalseats": 100,
+        "availableseats": 100,
+        "bookedseats": 0,
+        "userId": "67a2ed3a5e3c391bf6ea3ca5",
+        "__v": 0
+    }
+]
+
+
+
+================================================================================================================================================================================
+
+METHOD : GET
+
+URL :http://localhost:3021/event/get/67a2ee235e3c391bf6ea3cad
+
+RESPONSE: 
+
+{
+    "_id": "67a2ee235e3c391bf6ea3cad",
+    "amountrange": 10,
+    "eventname": "Marriage",
+    "eventdate": "2025-02-10T00:00:00.000Z",
+    "eventlocation": "telangana",
+    "eventtime": "18:15:10",
+    "totalseats": 100,
+    "availableseats": 100,
+    "bookedseats": 0,
+    "userId": "67a2ed3a5e3c391bf6ea3ca5",
+    "__v": 0
+}
+
+
+================================================================================================================================================================================
+
+
+METHOD: PUT
+URL : http://localhost:3021/event/update/67a2ee235e3c391bf6ea3cad
+
+
+BODY :
+{
+
+       "amountrange": 50
+}
+
+RESPONSE: 
+
+{
+    "_id": "67a2ee235e3c391bf6ea3cad",
+    "amountrange": 50, // amount changed 
+    "eventname": "Marriage",
+    "eventdate": "2025-02-10T00:00:00.000Z",
+    "eventlocation": "telangana",
+    "eventtime": "18:15:10",
+    "totalseats": 100,
+    "availableseats": 100,
+    "bookedseats": 0,
+    "userId": "67a2ed3a5e3c391bf6ea3ca5",
+    "__v": 0
+}
+
+
+================================================================================================================================================================================
+
+
+METHOD: DELETE
+
+
+URL : http://localhost:3021/event/delete/67a2eed45e3c391bf6ea3cb0
+
+RESPONSE :
+
+{
+    "message": "event deleted successfully"
+}
+
+
+If user try to Delete then we get: 
+case-2:
+
+RESPONSE :
+{
+    "error": "User role not having the permissions to do"
+}
+
+================================================================================================================================================================================
+USER:
+
+
+register:
+===========>
+
+METHOD: POST 
+
+URL :http://localhost:3021/auth/register
+
+BODY:
+
+
+{
+    
+    "username":"harsha",
+    "password":"harsha123",
+    "email":"harsha123@gamil.com",
+    "role":"user"  
+}
+
+RESPONSE 
+
+{
+    "message": "user created successfully"
+}
+
+
+================================================================================================================================================================================
+
+LOGIN
+==========>
+
+METHOD :POST
+
+URL :http://localhost:3021/auth/login
+
+
+BODY :
+
+{
+    
+    "username":"harsha",
+    "password":"harsha123"
+}
+
+RESPONSE
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTJmMzY4NWUzYzM5MWJmNmVhM2NiZCIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzM4NzMyNjUwfQ._j5dw1QoEcBzxED2jDT_Z4jhvwuRcxHJfu2oSLXSa40"
+}
+
+
+While logging in if user not found then we get 
+case-2:
+
+BODY:
+{
+    
+    "username":"harsha23",
+    "password":"harsha123"
+}
+
+RESPONSE:
+
+{
+    "error": "user not found"
+}
+
+
+While logging in if provided password is incorrect then we get 
+case-3:
+
+BODY :
+{
+    
+    "username":"harsha",
+    "password":"harsha2123"
+}
+
+RESPONSE :
+
+{
+    "error": "invalid credentials"
+}
+
+
+
+
+
+================================================================================================================================================================================
+
+METHOD: POST 
+
+URL :http://localhost:3021/auth/logout
+
+While loggin out if we not provide the token thenwe get the 
+case-1:
+
+HEADER:
+value :""
+
+RESPONSE
+{
+    "error": "Token not found"
+}
+
+While loggin out if the token is invalid  thenwe get the 
+case-2:
+
+HEADER:
+value : "Bearer gt"
+
+RESPONSE
+{
+    "error": "Invalid or expired token"
+}
+
+
+
+// while logging out if the token is correctly matched then we get the :
+case-3:
+
+HEADER:
+value: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTJmMzY4NWUzYzM5MWJmNmVhM2NiZCIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzM4NzMyNjUwfQ._j5dw1QoEcBzxED2jDT_Z4jhvwuRcxHJfu2oSLXSa40"
+
+
+RESPONSE
+{
+    "message": "user logged out successfully"
+}
+
+
+// after logging out if we try to do any actions, are api calls then we get the :
+case-4:
+
+
+HEADER:
+value: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTJmMzY4NWUzYzM5MWJmNmVhM2NiZCIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzM4NzMyNjUwfQ._j5dw1QoEcBzxED2jDT_Z4jhvwuRcxHJfu2oSLXSa40"
+
+
+RESPONSE
+{
+    "error": "User is logged out, access denied"
+}
+
+
+================================================================================================================================================================================
+
+
+POST :
+http://localhost:3021/event/location
+
+
+
+{
+    "eventneedlocation": "telangana"
+}
+
+
+{
+    "eventneedlocation": "telangana",
+    "userId": "67a2f3685e3c391bf6ea3cbd",
+    "_id": "67a2f4fd5e3c391bf6ea3cc6",
+    "__v": 0
+}
+
+
+case-2:
+
+{
+    "eventneedlocation": "telangana"
+}
+
+{
+    "message": "location already exist"
+}
+
+
+
+
+================================================================================================================================================================================
+
+METHOD : GET
+
+URL :http://localhost:3021/event/get
+
+RESPONSE:
+
+[
+    {
+        "_id": "67a2ee235e3c391bf6ea3cad",
+        "amountrange": 50,
+        "eventname": "Marriage",
+        "eventdate": "2025-02-10T00:00:00.000Z",
+        "eventlocation": "telangana",
+        "eventtime": "18:15:10",
+        "totalseats": 100,
+        "availableseats": 100,
+        "bookedseats": 0,
+        "userId": "67a2ed3a5e3c391bf6ea3ca5",
+        "__v": 0
+    }
+]
+
+
+case-2:
+
+http://localhost:3021/event/get
+
+RESPONSE:
+
+{
+    "message": "Please provide your location first."
+}
+
+
+
+================================================================================================================================================================================
+
+METHOD :POST 
+
+URL :http://localhost:3021/event/eventit/67a2ee235e3c391bf6ea3cad
+
+BODY :
+{
+    "NoOfSeatsBooking": 10
+}
+
+RESPONSE:
+
+{
+    "eventid": "67a2ee235e3c391bf6ea3cad",
+    "amountrange": 50,
+    "eventname": "Marriage",
+    "eventdate": "2025-02-10T00:00:00.000Z",
+    "eventlocation": "telangana",
+    "eventtime": "18:15:10",
+    "eventManager": "Amit",
+    "eventManagerEmail": "Amit123@gamil.com",
+    "eventBookedBy": "harsha",
+    "email": "harsha123@gamil.com",
+    "NoOfSeatsBooking": 10,
+    "AmountNeedPay": 500,
+    "userId": "67a2f3685e3c391bf6ea3cbd",
+    "_id": "67a2f6735e3c391bf6ea3ccf",
+    "__v": 0
+}
+
+
+
+================================================================================================================================================================================
+
+METHOD : GET
+ 
+URL :http://localhost:3021/event/all
+
+BODY :
+[
+    {
+        "_id": "67a2f6735e3c391bf6ea3ccf",
+        "eventid": "67a2ee235e3c391bf6ea3cad",
+        "amountrange": 50,
+        "eventname": "Marriage",
+        "eventdate": "2025-02-10T00:00:00.000Z",
+        "eventlocation": "telangana",
+        "eventtime": "18:15:10",
+        "eventManager": "Amit",
+        "eventManagerEmail": "Amit123@gamil.com",
+        "eventBookedBy": "harsha",
+        "email": "harsha123@gamil.com",
+        "NoOfSeatsBooking": 10,
+        "AmountNeedPay": 500,
+        "userId": "67a2f3685e3c391bf6ea3cbd",
+        "__v": 0
+    }
+]
+
+
+
+
+
+
+
+================================================================================================================================================================================
+
+
+PUT:
+
+http://localhost:3021/event/bookings/67a2f6735e3c391bf6ea3ccf
+
+
+{
+    "NoOfSeatsBooking": 15
+}
+
+
+
+{
+    "_id": "67a2f6735e3c391bf6ea3ccf",
+    "eventid": "67a2ee235e3c391bf6ea3cad",
+    "amountrange": 50,
+    "eventname": "Marriage",
+    "eventdate": "2025-02-10T00:00:00.000Z",
+    "eventlocation": "telangana",
+    "eventtime": "18:15:10",
+    "eventManager": "Amit",
+    "eventManagerEmail": "Amit123@gamil.com",
+    "eventBookedBy": "harsha",
+    "email": "harsha123@gamil.com",
+    "NoOfSeatsBooking": 15,
+    "AmountNeedPay": 750,
+    "userId": "67a2f3685e3c391bf6ea3cbd",
+    "__v": 0
+}
+
+
+
+================================================================================================================================================================================
+
+
+
+
+
+
+
+
+================================================================================================================================================================================
+
+
+
+
+
+
+================================================================================================================================================================================
+
+
+
+
+
+
+
+
+
+
+
+================================================================================================================================================================================
+
+
+
+
+
+
+
+
+
+================================================================================================================================================================================
+
+
+
+
+
+
+
+
+================================================================================================================================================================================
+
+
+
+
+
+
+
+================================================================================================================================================================================
+
