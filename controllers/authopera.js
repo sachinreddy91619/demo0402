@@ -13,7 +13,7 @@ import app from '../app.js';
 
 console.log("Starting authopera.js...");
 
-
+// THE REGISTRATION CONTROLLER LOGIC 
 export const register=async(request,reply)=>{
     const {username,password,email,role}=request.body;
 
@@ -23,8 +23,7 @@ export const register=async(request,reply)=>{
  if(!username || !password || !email || !role) {
     console.log("Missing required fields:", { username, password, email, role });  // Debugging missing fields
     return reply.status(400)
-    // here we are getting the error mesage from the schemavalidation 
-    //.send({ error: 'Missing required fields (username, password, email, role)' });
+    
     console.log(reply.status(400))
   }
 
@@ -52,6 +51,7 @@ export const register=async(request,reply)=>{
     }
 }
 
+// THE LOGIN CONTROLLER LOGIC 
 export const login=async (request,reply)=>{
     
    
@@ -60,13 +60,18 @@ export const login=async (request,reply)=>{
     try{
         const user=await User.findOne({username});
         console.log("User found for login:", user ? user._id : "No user found");
+
         if(!user){
             return reply.status(400).send({error:'user not found'});
         }
+
         const ismatch=await bcrypt.compare(password,user.password);
+
         if(!ismatch) return reply.status(400).send({error:'invalid credentials'});
+
         const payload={id:user._id,role:user.role};
         const token=jwt.sign(payload,process.env.SEC);
+
       //  reply.status(200).send({token});
 console.log(token);
         const data=await User.findOne({username});
@@ -75,7 +80,7 @@ console.log(token);
 
        const existingLog = await Logs.findOne({ UserId: user._id})
 
-        console.log(existingLog,"lIf you want to create a new Logs entry only when there's no active session, you can leave the else block as it is. If you want to handle multiple logins or sessions (which is useful if a user can log in from multiple devices), you may need a more complex handling system (e.g., session IDs or timestamp tracking).If you want to create a new Logs entry only when there's no active session, you can leave the else block as it is. If you want to handle multiple logins or sessions (which is useful if a user can log in from multiple devices), you may need a more complex handling system (e.g., session IDs or timestamp tracking).If you want to create a new Logs entry only when there's no active session, you can leave the else block as it is. If you want to handle multiple logins or sessions (which is useful if a user can log in from multiple devices), you may need a more complex handling system (e.g., session IDs or timestamp tracking).If you want to create a new Logs entry only when there's no active session, you can leave the else block as it is. If you want to handle multiple logins or sessions (which is useful if a user can log in from multiple devices), you may need a more complex handling system (e.g., session IDs or timestamp tracking).");
+        console.log(existingLog,"exisiting loger details here");
 
         if (existingLog) {
             console.log("Existing log found, updating log:", existingLog);
@@ -130,8 +135,6 @@ console.log(token);
 
 
 // export const logout= async (request,reply)=>{
-
-
 //     try{
 
 //         const authHeader=request.headers['authorization'];
@@ -146,13 +149,11 @@ console.log(token);
 //                 global.backlistedTokens=[];
 
 //             }
-            
 //             global.backlistedTokens.push(token);
 //             console.log('Token blacklisted:', token);
 //             console.log('Blacklisted tokens:', global.backlistedTokens);
 //             //console.log(global.backlistedTokens); 
 //             reply.send({message:'user logged out successfully'})
-
 //     }
 //     catch(err){
 //         console.error('Error durign the logout',err);
@@ -164,6 +165,9 @@ console.log(token);
 
 
 
+
+
+// THE LOGOUT CONTROLLER LOGIC 
 export const logout= async (request,reply)=>{
 
     try{

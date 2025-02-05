@@ -10,7 +10,7 @@ const app = fastify({
 
 
 
-
+// The is the  main route for posting the data in to the data-base
 export const createEvent = async (request, reply) => {
 
     console.log("this is the starting of the create route");
@@ -49,7 +49,7 @@ export const createEvent = async (request, reply) => {
         const savedEvent = await event.save();
         console.log("data saved to the database first time for this entry");
         return reply.send(savedEvent);
-       
+
 
     } catch (err) {
         reply.status(400).send({ error: err.message })
@@ -58,31 +58,7 @@ export const createEvent = async (request, reply) => {
 };
 
 
-export const loc = async (request, reply) => {
-    const { eventneedlocation } = request.body;
-    try {
-
-        const existinglocation=await EventLoc.findOne({
-            userId: request.user.id
-        })
-
-        if(existinglocation){
-            return reply.status(400).send({ message: "location already exist" })
-
-        }
-        const event = new EventLoc({
-            eventneedlocation,
-            userId: request.user.id
-        });
-        console.log(request.user.id)
-        await event.save();
-        reply.send(event);
-
-    } catch (err) {
-        reply.status(400).send({ message: "getting the error while giving the event location" })
-    }
-}
-
+// This is the route for getting the events
 export const getevent = async (request, reply) => {
     try {
 
@@ -100,13 +76,13 @@ export const getevent = async (request, reply) => {
         }
         else {
 
-            const userlocation=await EventLoc.findOne({
+            const userlocation = await EventLoc.findOne({
                 userId: request.user.id
             });
 
-            console.log(userlocation,"sachin sachin sachin sachin sachin" )
-            
-            if(!userlocation){
+            console.log(userlocation, "sachin sachin sachin sachin sachin")
+
+            if (!userlocation) {
                 return reply.status(404).send({ message: "Please provide your location first." })
             }
 
@@ -146,9 +122,151 @@ export const getevent = async (request, reply) => {
 };
 
 
+
+// This is the route for getting all the events 
+export const getbyid = async (request, reply) => {
+
+    try {
+        const event = await Event.findById(request.params.id);
+
+        if (!event || event.userId.toString() !== request.user.id) {
+            return reply.status(404).send({ error: "event not found" })
+        }
+
+        reply.send(event);
+
+    } catch (err) {
+        reply.status(400).send({ error: err.message })
+    }
+}
+
+
+// This is the route for updating an event
+export const updateevent = async (request, reply) => {
+    const { eventname, eventdate, eventlocation, amountrange, eventtime } = request.body;
+
+
+    const eventDate = new Date(eventdate);
+    const currentDate = new Date();
+
+    if (eventDate <= currentDate) {
+        return reply.status(400).send({
+            error: 'Bad Request',
+            message: 'Event date must be in the future.',
+        });
+    }
+
+
+    try {
+        const event = await Event.findById(request.params.id);
+        console.log(event, "qodic qodic ")
+
+        if (!event || event.userId.toString() !== request.user.id) {
+            return reply.status(400).send({ error: 'event not found' })
+        }
+
+
+        const updateData = {};
+
+        if (eventname) updateData.eventname = eventname;
+        if (eventdate) updateData.eventdate = eventdate;
+        if (eventlocation) updateData.eventlocation = eventlocation;
+        if (amountrange) updateData.amountrange = amountrange;
+        if (eventtime) updateData.eventtime = eventtime;
+        // if (eventname) event.eventname = eventname;
+        // if (eventdate) event.eventdate = eventdate;
+        // if (eventlocation) event.eventlocation = eventlocation;
+        // if (amountrange) event.amountrange = amountrange;
+        // if (eventtime) event.eventtime = eventtime;
+
+        // await event.save();
+        // reply.send(event);
+        const updatedEvent = await Event.findByIdAndUpdate(request.params.id,
+            { $set: updateData }, { new: true, runValidators: true });
+
+        if (!updatedEvent) {
+            return reply.status(400).send({ error: 'Event updated failed found' })
+        }
+
+        reply.send(updatedEvent);
+
+    } catch (err) {
+        reply.status(400).send({ error: err.message });
+
+    }
+};
+
+
+// This is the route for deleting an event
+export const eventdelete = async (request, reply) => {
+
+
+    try {
+
+        const event = await EMB.findById(request.params.id);
+
+        if (!event || event.userId.toString() !== request.user.id) {
+            return reply.status(400).send({ error: 'event not found' });
+        }
+
+        const d = event.NoOfSeatsBooking;
+
+        const event1 = await Event.findByIdAndUpdate(event.eventid);
+        event1.bookedseats = event1.bookedseats - d;
+        event1.availableseats = event1.totalseats - event1.bookedseats;
+
+        await event1.save();
+
+
+        await event.deleteOne();
+        reply.send({ message: 'event deleted successfully' });
+
+    }
+
+    catch (err) {
+        reply.status(400).send({ error: err.message });
+    }
+}
+
+
+
+
+
+// ==================================================================================================================================
+
+
+
+// This is the  route for using the location 
+export const loc = async (request, reply) => {
+    const { eventneedlocation } = request.body;
+    try {
+
+        const existinglocation = await EventLoc.findOne({
+            userId: request.user.id
+        })
+
+        if (existinglocation) {
+            return reply.status(400).send({ message: "location already exist" })
+
+        }
+        const event = new EventLoc({
+            eventneedlocation,
+            userId: request.user.id
+        });
+        console.log(request.user.id)
+        await event.save();
+        reply.send(event);
+
+    } catch (err) {
+        reply.status(400).send({ message: "getting the error while giving the event location" })
+    }
+}
+
+
+// This is the route for event booking 
 export const eventbook = async (request, reply) => {
 
-    const {  NoOfSeatsBooking } = request.body;
+    const { NoOfSeatsBooking } = request.body;
 
 
 
@@ -212,7 +330,7 @@ export const eventbook = async (request, reply) => {
             eventlocation,
             amountrange,
             eventtime,
-           
+
             NoOfSeatsBooking,
             eventBookedBy,
             email,
@@ -228,37 +346,12 @@ export const eventbook = async (request, reply) => {
 
         const event1 = await Event.findById(request.params.id);
 
-        // totalseats=100
-        // availableseats=100
-        // bookedseats=0
 
         event1.bookedseats = event1.bookedseats + com.NoOfSeatsBooking,
 
             event1.availableseats = event1.totalseats - event1.bookedseats
 
         await event1.save();
-
-
-        /* 
-        
-         const event = await Event.findById(request.params.id);
-         
-        totalseats=100
-        availableseats=100
-        bookedseats=0
-        
-        bookedseats=bookedseats+com.NoOfSeatsBooking,
-        
-        availableseats=totalseats-bookedseats
-        
-        await event.save();
-        
-        */
-
-
-
-
-
 
     } catch (err) {
         reply.status(400).send({ error: err.message })
@@ -267,8 +360,7 @@ export const eventbook = async (request, reply) => {
 }
 
 
-
-
+// This is the route to get all the bookings
 export const getallbookings = async (request, reply) => {
 
     try {
@@ -285,62 +377,7 @@ export const getallbookings = async (request, reply) => {
 }
 
 
-
-
-
-// export const booking =async(request,reply)=>{
-//     const { NoOfSeatsBooking} = request.body;
-
-//     try{
-//         console.log(request.user.id,"rgvrgvrgv")
-//         const event=await EMB.findById(request.params.id);
-//         console.log(event,"ahhhahhhh")
-
-//         if (!event || event.userId.toString() !== request.user.id) {
-//             return reply.status(400).send({ error: 'event not found here' })
-//         }
-
-//         if(NoOfSeatsBooking){
-//             event.NoOfSeatsBooking=NoOfSeatsBooking;
-//            }
-
-//            console.log(event.eventid,"hbffffffffffffffffffff111111122ffffffffhbffffffffffrrdeasxasccccccccccccccccccccccsxffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffmjsbyyvcdcbkjhdacb")
-//       const event1 = await Event.findById(event.eventid);
-//       console.log(event1,"ipliplilil")
-//       console.log(request.params.id)
-
-
-//       if (NoOfSeatsBooking > event1.availableseats) {
-//         return reply.status(400).send({ message: `maximum number of seats can be booked :${event.availableseats}, so please reduce the number of seats` })
-
-//     }
-// console.log(NoOfSeatsBooking)
-//     event1.bookedseats = event1.bookedseats +NoOfSeatsBooking,
-
-//         event1.availableseats = event1.totalseats - event1.bookedseats
-
-//         const AmountNeedPay = event1.amountrange * NoOfSeatsBooking
-
-//                          if(event.AmountNeedPay){
-//                              event.AmountNeedPay=AmountNeedPay
-//                          }            
-
-//     await event1.save();
-
-//         await event.save();
-//         reply.send(event);
-
-
-//     }
-//     catch(err){
-
-//             reply.status(400).send({ error: err.message });
-
-//     }
-// }
-
-
-
+// This is the route to update the booking
 export const booking = async (request, reply) => {
 
     const { NoOfSeatsBooking } = request.body;
@@ -365,31 +402,27 @@ export const booking = async (request, reply) => {
         // if (NoOfSeatsBooking) {
         //     book.NoOfSeatsBooking = NoOfSeatsBooking;
         // }
-        if(book.NoOfSeatsBooking===NoOfSeatsBooking){
-            return reply.status(200).send({message:"you are given same number of seats,so no changes in your booking"})
+        if (book.NoOfSeatsBooking === NoOfSeatsBooking) {
+            return reply.status(200).send({ message: "you are given same number of seats,so no changes in your booking" })
 
         }
 
-        if(NoOfSeatsBooking===0){
-            return reply.status(400).send({message:"no of seats cannot be zero"});
+        if (NoOfSeatsBooking === 0) {
+            return reply.status(400).send({ message: "no of seats cannot be zero" });
         }
-
-
-
-
 
         if (NoOfSeatsBooking) {
 
             if (book.NoOfSeatsBooking > NoOfSeatsBooking) {
-                console.log(event1.availableseats,"availableseats-before")
+                console.log(event1.availableseats, "availableseats-before")
 
                 event1.availableseats = event1.availableseats + (book.NoOfSeatsBooking - NoOfSeatsBooking);
-                console.log(event1.availableseats,"availableseats-after")
-                console.log(event1.bookedseats,"bookedseats-before")
+                console.log(event1.availableseats, "availableseats-after")
+                console.log(event1.bookedseats, "bookedseats-before")
                 event1.bookedseats = event1.totalseats - event1.availableseats
-                console.log(event1.bookedseats,"bookedseats-after")
+                console.log(event1.bookedseats, "bookedseats-after")
                 book.AmountNeedPay = NoOfSeatsBooking * event1.amountrange
-                console.log(book.NoOfSeatsBooking,"bookedseats-Before")
+                console.log(book.NoOfSeatsBooking, "bookedseats-Before")
                 book.NoOfSeatsBooking = NoOfSeatsBooking;
                 console.log(book.AmountNeedPay, "sai")
                 console.log(NoOfSeatsBooking)
@@ -398,16 +431,16 @@ export const booking = async (request, reply) => {
             }
 
             else if (book.NoOfSeatsBooking < NoOfSeatsBooking) {
-                console.log(event1.availableseats,"availableseats-before")
+                console.log(event1.availableseats, "availableseats-before")
 
 
                 event1.availableseats = event1.availableseats - (NoOfSeatsBooking - book.NoOfSeatsBooking);
-                console.log(event1.availableseats,"availableseats-after")
-                console.log(event1.bookedseats,"bookedseats-before")
+                console.log(event1.availableseats, "availableseats-after")
+                console.log(event1.bookedseats, "bookedseats-before")
                 event1.bookedseats = event1.totalseats - event1.availableseats
-                console.log(event1.bookedseats,"bookedseats-after")
+                console.log(event1.bookedseats, "bookedseats-after")
                 book.AmountNeedPay = NoOfSeatsBooking * event1.amountrange
-                console.log(book.NoOfSeatsBooking,"bookedseats-Before")
+                console.log(book.NoOfSeatsBooking, "bookedseats-Before")
                 book.NoOfSeatsBooking = NoOfSeatsBooking;
                 console.log(book.AmountNeedPay)
                 console.log(NoOfSeatsBooking)
@@ -421,37 +454,7 @@ export const booking = async (request, reply) => {
         await book.save();
         reply.send(book);
 
-        console.log("this is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd kndthis is good in this area here in the nkd nkd nkd knd nnk dnk nkd nkd nkd nkd")
-
-        // const event1 = await Event.findById(book.eventid);
-        // console.log(event1, "ipliplilil")
-
-
-
-        // console.log(book.eventid, "hbffffffffffffffffffff111111122ffffffffhbffffffffffrrdeasxasccccccccccccccffffffffffffffffffffffffmjsbyyvcdcbkjhdacb")
-        // const event1 = await Event.findById(book.eventid);
-        // console.log(event1, "ipliplilil")
-        // console.log(request.params.id)
-
-
-        // if (NoOfSeatsBooking > event1.availableseats) {
-        //     return reply.status(400).send({ message: `maximum number of seats can be booked :${event.availableseats}, so please reduce the number of seats` })
-
-        // }
-        // console.log(NoOfSeatsBooking)
-        // event1.bookedseats = event1.bookedseats + NoOfSeatsBooking,
-
-        //     event1.availableseats = event1.totalseats - event1.bookedseats
-
-        // const AmountNeedPay = event1.amountrange * NoOfSeatsBooking
-
-        // if (book.AmountNeedPay) {
-        //     book.AmountNeedPay = AmountNeedPay
-        // }
-
-        // await event1.save();
-        // await book.save();
-        // reply.send(book);
+        console.log("this nkd")
 
 
     }
@@ -463,144 +466,7 @@ export const booking = async (request, reply) => {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-export const getbyid = async (request, reply) => {
-
-    try {
-        const event = await Event.findById(request.params.id);
-
-        if (!event || event.userId.toString() !== request.user.id) {
-            return reply.status(404).send({ error: "event not found" })
-        }
-
-        reply.send(event);
-
-    } catch (err) {
-        reply.status(400).send({ error: err.message })
-    }
-}
-
-
-export const updateevent = async (request, reply) => {
-    const { eventname, eventdate, eventlocation, amountrange, eventtime } = request.body;
-
-
-    const eventDate = new Date(eventdate);
-    const currentDate = new Date();
-
-    if (eventDate <= currentDate) {
-        return reply.status(400).send({
-            error: 'Bad Request',
-            message: 'Event date must be in the future.',
-        });
-    }
-
-
-    try {
-        const event = await Event.findById(request.params.id);
-        console.log(event,"qodic qodic ")
-
-        if (!event || event.userId.toString() !== request.user.id) {
-            return reply.status(400).send({ error: 'event not found' })
-        }
-
-
-        const updateData={};
-
-        if (eventname) updateData.eventname = eventname;
-        if (eventdate) updateData.eventdate = eventdate;
-        if (eventlocation) updateData.eventlocation = eventlocation;
-        if (amountrange) updateData.amountrange = amountrange;
-        if (eventtime) updateData.eventtime = eventtime;
-        // if (eventname) event.eventname = eventname;
-        // if (eventdate) event.eventdate = eventdate;
-        // if (eventlocation) event.eventlocation = eventlocation;
-        // if (amountrange) event.amountrange = amountrange;
-        // if (eventtime) event.eventtime = eventtime;
-
-        // await event.save();
-        // reply.send(event);
-        const updatedEvent = await Event.findByIdAndUpdate(request.params.id,
-            {$set: updateData}, { new: true,runValidators: true });
-            
-            if(!updatedEvent){  
-                return reply.status(400).send({ error: 'Event updated failed found' })
-            }
-
-            reply.send(updatedEvent);
-
-    } catch (err) {
-        reply.status(400).send({ error: err.message});
-
-    }
-};
-
-
-
-
-export const eventdelete = async (request, reply) => {
-
-
-    try {
-
-        const event = await EMB.findById(request.params.id);
-
-        if (!event || event.userId.toString() !== request.user.id) {
-            return reply.status(400).send({ error: 'event not found' });
-        }
-
-        const d=event.NoOfSeatsBooking;
-
-        const event1=await Event.findByIdAndUpdate(event.eventid);
-        event1.bookedseats=event1.bookedseats-d;
-        event1.availableseats=event1.totalseats-event1.bookedseats;
-
-        await event1.save();
-
-
-        await event.deleteOne();
-        reply.send({ message: 'event deleted successfully' });
-
-    }
-
-    catch (err) {
-        reply.status(400).send({ error: err.message });
-    }
-}
-
-
-
-
-
-
-
-
-
-
+// This is the route for deleting an booking
 export const deleteevent = async (request, reply) => {
     try {
 

@@ -8,45 +8,6 @@ const app = fastify({
 import Logs from '../models/Logs.js';
 
 
-// // Attach the backlisted array to the Fastify instance
-// //app.decorate('backlisted',[]); // This attaches `backlisted` to the Fastify instance
-
-// //import app from '../app.js'; noneeed code for [] blacklisted logic 
-// //export   let backlisted=[]; noneeded code for [] blacklisted logic 
-
-
-// export default(request,reply,done)=>{
-
-//     const authHeader=request.headers['authorization'];
-
-//     const token=authHeader && authHeader.split(' ')[1];
-
-//     if(!token) return reply.status(401).send({error:'token not found'})
-        
-
-//         // console.log(global.backlistedTokens,"before"); 11
-
-//         // if(global.backlistedTokens && global.backlistedTokens.includes(token))11
-            
-//         //     {11
-//         //         console.log(global.backlistedTokens,"after"); 11
-//         //     return reply.status(401).send({11
-//         //         error:'token has been  invalidated,please login again'11
-//         //     })11
-//         // } 11
-
-//         jwt.verify(token,process.env.SEC,(err,user)=>{ //secret key
-            
-//         if(err){
-//             return reply.status(403).json({error:'token not found'})
-//         }
-//         request.user=user;
-//         done();
-//     });
-// };
-
-
-// //export {app}
 export default async (request, reply) => {
     const authHeader = request.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];  // Extract the token from the authorization header
@@ -77,7 +38,7 @@ export default async (request, reply) => {
         request.user = decoded;
 
         // Continue with the request processing
-        
+
     } catch (err) {
         console.error('Token verification failed:', err);
         return reply.status(403).send({ error: 'Invalid or expired token' });
