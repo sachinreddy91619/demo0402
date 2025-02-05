@@ -78,7 +78,10 @@ export const getevent = async (request, reply) => {
 
             const userlocation = await EventLoc.findOne({
                 userId: request.user.id
-            });
+            })
+            .sort({ createdAt: -1 }) // Sort by
+            .limit(1);
+
 
             console.log(userlocation, "sachin sachin sachin sachin sachin")
 

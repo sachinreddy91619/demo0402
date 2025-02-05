@@ -1,4 +1,8 @@
-//const mongoose=require('mongoose');
+
+   
+ 
+
+
 
 import fastify from 'fastify';
 
@@ -14,8 +18,9 @@ const EventLocSchema= new mongoose.Schema(
     userId: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'User', 
-        required: true
-    }
+        required: true,
+    }},{
+    timestamps:true
     
      //userId:{type:mongoose.Schema.Types.ObjectId,ref:'User',required:true}
 }
