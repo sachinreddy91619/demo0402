@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import User from '../models/Users.js';
 import Logs from '../models/Logs.js';
 import jwt from 'jsonwebtoken';
+import joi from 'joi';
 
 //import { backlisted } from '../middleware/authmiddle.js';
 
@@ -12,6 +13,16 @@ const eee=fastify({
 import app from '../app.js';
 
 console.log("Starting authopera.js...");
+
+const userRegisterSchema=joi.object({
+    username:joi.string().alphanum().min(3).max(15).required(),
+    email:joi.string().email().required(),
+    password:joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),
+    role:joi.string().valid('user', 'admin').required()
+
+}) ;
+
+
 
 // THE REGISTRATION CONTROLLER LOGIC 
 export const register=async(request,reply)=>{

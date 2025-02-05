@@ -5,7 +5,7 @@ import fastify from 'fastify';
 const registerUserSchema = {
     body: {
         type: 'object',
-        required: ['username', 'email', 'password', 'role'],
+       // required: ['username', 'email', 'password', 'role'],
         properties: {
             username: { type: 'string' },
             email: { type: 'string' },
