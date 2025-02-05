@@ -1,0 +1,24 @@
+
+
+..> In Joi validation, you can chain multiple methods together to define a schema. When you're using .pattern() to validate a string against a regular expression and .required() to ensure the field is not empty, the order in which you chain them doesn’t matter in terms of functionality, but it's more about readability and consistency.
+
+
+..> Implicit Regular Expression: The .email() method internally checks for a valid email format, which is often based on a general email pattern (e.g., user@example.com).
+Built-in Logic: The Joi library has its own regular expression for email validation. So, when you use .email(), you don't need to manually write the regex for validating emails.
+
+...> To enforce that a field only contains either "admin" or "user" using Joi, you can use the .valid() method to specify the allowed values.
+
+ex : 
+const joi = require('joi');
+
+const schema = joi.object({
+  role: joi.string().valid('admin', 'user').required()  // Ensures role is either 'admin' or 'user'
+});
+
+const result1 = schema.validate({ role: 'admin' });
+console.log(result1.error);  // null, valid role
+
+const result2 = schema.validate({ role: 'guest' });
+console.log(result2.error);  // Error: "role" must be one of [admin, user]
+
+...> 
